@@ -20,7 +20,7 @@ module Phlexi
         end
 
         def inspect
-          "<#{self.class.name} key=#{key.inspect} parent=#{id.inspect} />"
+          "<#{self.class.name} key=#{key.inspect} parent=#{parent.inspect} />"
         end
       end
     end

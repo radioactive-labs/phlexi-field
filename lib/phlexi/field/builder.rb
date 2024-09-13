@@ -52,11 +52,11 @@ module Phlexi
         self.class::FieldCollection.new(field: self, collection:, &)
       end
 
-      protected
-
       def has_value?
-        value.present?
+        attachment_reflection.present? ? value.attached? : (value.present? || value == false)
       end
+
+      protected
 
       def determine_initial_value(value)
         return value unless value == NIL_VALUE

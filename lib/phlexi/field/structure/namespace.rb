@@ -84,10 +84,8 @@ module Phlexi
           @dom_id ||= begin
             id = if object.nil?
               nil
-            elsif object.class.respond_to?(:primary_key)
-              object.public_send(object.class.primary_key) || :new
-            elsif object.respond_to?(:id)
-              object.id || :new
+            elsif (primary_key = Phlexi::Field.object_primary_key(object))
+              primary_key&.to_s || :new
             end
             [key, id].compact.join("_").underscore
           end

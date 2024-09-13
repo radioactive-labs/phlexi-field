@@ -4,11 +4,11 @@ module Phlexi
   module Field
     module Options
       module Attachments
-        protected
-
         def attachment_reflection
           @attachment_reflection ||= find_attachment_reflection
         end
+
+        protected
 
         def find_attachment_reflection
           if object.class.respond_to?(:reflect_on_attachment)

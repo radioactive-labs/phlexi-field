@@ -5,6 +5,8 @@ require "phlex"
 require "active_support/core_ext/object/blank"
 
 module Phlexi
+  NIL_VALUE = :__i_phlexi_i__
+
   module Field
     Loader = Zeitwerk::Loader.new.tap do |loader|
       loader.tag = File.basename(__FILE__, ".rb")
@@ -19,8 +21,14 @@ module Phlexi
 
     COMPONENT_BASE = (defined?(::ApplicationComponent) ? ::ApplicationComponent : Phlex::HTML)
 
-    NIL_VALUE = :__i_phlexi_i__
-
     class Error < StandardError; end
+
+    def self.object_primary_key(object)
+      if object.class.respond_to?(:primary_key)
+        object.send(object.class.primary_key.to_sym)
+      elsif object.respond_to?(:id)
+        object.id
+      end
+    end
   end
 end
