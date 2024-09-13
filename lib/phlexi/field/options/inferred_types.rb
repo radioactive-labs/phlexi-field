@@ -6,12 +6,12 @@ module Phlexi
   module Field
     module Options
       module InferredTypes
-        def inferred_field_type
-          @inferred_field_type ||= infer_field_type
-        end
-
         def inferred_field_component
           @inferred_component ||= infer_field_component
+        end
+
+        def inferred_field_type
+          @inferred_field_type ||= infer_field_type
         end
 
         private
@@ -19,31 +19,31 @@ module Phlexi
         def infer_field_component
           case inferred_field_type
           when :string, :text
-            infer_string_field_component(key)
+            infer_string_field_component || inferred_field_type
+          when :citext
+            infer_string_field_component || :string
           when :integer, :float, :decimal
             :number
           when :date, :datetime, :time
-            :date
+            :datetime
           when :boolean
             :boolean
           when :json, :jsonb, :hstore
             :code
           else
-            if association_reflection
-              :association
-            elsif attachment_reflection
-              :attachment
-            else
-              :text
-            end
+            inferred_field_type
           end
         end
 
         def infer_field_type
+          if object.class.respond_to?(:defined_enums)
+            return :enum if object.class.defined_enums.key?(key.to_s)
+          end
+
           if object.class.respond_to?(:columns_hash)
-            # ActiveRecord object
+            # ActiveRecord
             column = object.class.columns_hash[key.to_s]
-            return column.type if column
+            return column.type if column&.type
           end
 
           if object.class.respond_to?(:attribute_types)
@@ -52,10 +52,21 @@ module Phlexi
             return custom_type.type if custom_type&.type
           end
 
+          # Check attachments first since they are implemented as associations
+          return :attachment if attachment_reflection
+
+          return :association if association_reflection
+
           # Check if object responds to the key
           if object.respond_to?(key)
             # Fallback to inferring type from the value
             return infer_field_type_from_value(object.send(key))
+          end
+
+          # Check if object is a has that contains key
+          if object.respond_to?(:fetch)
+            # Fallback to inferring type from the value
+            return infer_field_type_from_value(object.fetch(key))
           end
 
           # Default to string if we can't determine the type
@@ -83,18 +94,15 @@ module Phlexi
           end
         end
 
-        def infer_string_field_component(key)
-          key = key.to_s.downcase
+        def infer_string_field_component
+          key = self.key.to_s.downcase
 
-          return :password if is_password_field?
+          return :password if is_password_field?(key)
 
-          custom_type = custom_string_field_type(key)
-          return custom_type if custom_type
-
-          :text
+          infer_string_field_component_from(key)
         end
 
-        def custom_string_field_type(key)
+        def infer_string_field_component_from(key)
           custom_mappings = {
             /url$|^link|^site/ => :url,
             /^email/ => :email,
@@ -113,9 +121,7 @@ module Phlexi
           nil
         end
 
-        def is_password_field?
-          key = self.key.to_s.downcase
-
+        def is_password_field?(key)
           exact_matches = ["password"]
           prefixes = ["encrypted_"]
           suffixes = ["_password", "_digest", "_hash", "_token"]
