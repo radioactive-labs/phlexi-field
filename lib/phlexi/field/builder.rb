@@ -13,13 +13,15 @@ module Phlexi
     # @attr_accessor [Object] value The value of the field.
     class Builder < Structure::Node
       include Phlex::Helpers
-      include Options::Associations
-      include Options::Attachments
-      include Options::Descriptions
-      include Options::Hints
+      include Options::Validators
       include Options::InferredTypes
+      include Options::Multiple
       include Options::Labels
       include Options::Placeholders
+      include Options::Descriptions
+      include Options::Hints
+      include Options::Associations
+      include Options::Attachments
 
       class DOM < Structure::DOM; end
 

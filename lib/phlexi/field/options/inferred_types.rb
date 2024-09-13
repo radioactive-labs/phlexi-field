@@ -14,14 +14,18 @@ module Phlexi
           @inferred_field_type ||= infer_field_type
         end
 
+        def inferred_string_field_type
+          @inferred_string_field_type || infer_string_field_type
+        end
+
         private
 
         def infer_field_component
           case inferred_field_type
-          when :string, :text
-            infer_string_field_component || inferred_field_type
-          when :citext
-            infer_string_field_component || :string
+          when :string, :citext
+            infer_string_field_type || :string
+          when :text
+            infer_string_field_type || inferred_field_type
           when :integer, :float, :decimal
             :number
           when :date, :datetime, :time
@@ -94,15 +98,24 @@ module Phlexi
           end
         end
 
-        def infer_string_field_component
-          key = self.key.to_s.downcase
-
-          return :password if is_password_field?(key)
-
-          infer_string_field_component_from(key)
+        def infer_string_field_type
+          infer_string_field_type_from_key || infer_string_field_type_from_validations
         end
 
-        def infer_string_field_component_from(key)
+        def infer_string_field_type_from_validations
+          return unless has_validators?
+
+          if attribute_validators.find { |v| v.kind == :numericality }
+            :number
+          elsif attribute_validators.find { |v| v.kind == :format && v.options[:with] == URI::MailTo::EMAIL_REGEXP }
+            :email
+          end
+        end
+
+        def infer_string_field_type_from_key
+          key = self.key.to_s.downcase
+          return :password if is_password_field?(key)
+
           custom_mappings = {
             /url$|^link|^site/ => :url,
             /^email/ => :email,

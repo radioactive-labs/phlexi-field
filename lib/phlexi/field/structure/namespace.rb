@@ -18,6 +18,8 @@ module Phlexi
       class Namespace < Structure::Node
         include Enumerable
 
+        class NamespaceCollection < Structure::NamespaceCollection; end
+
         attr_reader :builder_klass, :object
 
         def initialize(key, parent:, builder_klass:, object: nil)
@@ -71,7 +73,7 @@ module Phlexi
         # to another `Namespace` or `Field`.
         def nest_many(key, collection: nil, &)
           collection ||= Array(object_value_for(key: key))
-          create_child(key, NamespaceCollection, collection:, &)
+          create_child(key, self.class::NamespaceCollection, collection:, &)
         end
 
         # Iterates through the children of the current namespace, which could be `Namespace` or `Field`

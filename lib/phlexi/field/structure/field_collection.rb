@@ -7,6 +7,8 @@ module Phlexi
         include Enumerable
 
         class Builder
+          include Phlex::Helpers
+
           attr_reader :key, :index
 
           def initialize(key, field, index)
