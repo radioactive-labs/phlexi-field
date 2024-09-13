@@ -2,11 +2,10 @@ require "fiber/local"
 
 module Phlexi
   module Field
-    module Theme
-      extend ActiveSupport::Concern
-
-      included do
-        extend Fiber::Local
+    class Theme
+      def self.inherited(subclass)
+        super
+        subclass.extend Fiber::Local
       end
 
       # Retrieves the theme hash
@@ -26,8 +25,12 @@ module Phlexi
       #
       # @example Theme inheritance
       #   theme[:email] # Returns :text, indicating email inherits text's theme
+      def self.theme
+        raise NotImplementedError, "#{self} must implement #self.theme"
+      end
+
       def theme
-        raise NotImplementedError, "#{self.class} must implement #theme"
+        @theme ||= self.class.theme.freeze
       end
 
       # Recursively resolves the theme for a given property, handling nested symbol references
