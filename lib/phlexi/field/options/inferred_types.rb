@@ -21,22 +21,7 @@ module Phlexi
         private
 
         def infer_field_component
-          case inferred_field_type
-          when :string, :citext
-            infer_string_field_type || :string
-          when :text
-            infer_string_field_type || inferred_field_type
-          when :integer, :float, :decimal
-            :number
-          when :date, :datetime, :time
-            :datetime
-          when :boolean
-            :boolean
-          when :json, :jsonb, :hstore
-            :code
-          else
-            inferred_field_type
-          end
+          inferred_field_type
         end
 
         def infer_field_type
@@ -124,7 +109,7 @@ module Phlexi
             /^time/ => :time,
             /^date/ => :date,
             /^number|_count$|_amount$/ => :number,
-            /^color/ => :color
+            /^color|_color$/ => :color
           }
 
           custom_mappings.each do |pattern, type|
