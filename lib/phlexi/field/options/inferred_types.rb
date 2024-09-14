@@ -25,6 +25,13 @@ module Phlexi
         end
 
         def infer_field_type
+          # Check attachments first since they are implemented as associations
+          return :attachment if attachment_reflection
+
+          if association_reflection
+            return :association
+          end
+
           if object.class.respond_to?(:defined_enums)
             return :enum if object.class.defined_enums.key?(key.to_s)
           end
@@ -40,11 +47,6 @@ module Phlexi
             custom_type = object.class.attribute_types[key.to_s]
             return custom_type.type if custom_type&.type
           end
-
-          # Check attachments first since they are implemented as associations
-          return :attachment if attachment_reflection
-
-          return :association if association_reflection
 
           # Check if object responds to the key
           if object.respond_to?(key)
