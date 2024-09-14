@@ -28,9 +28,7 @@ module Phlexi
           # Check attachments first since they are implemented as associations
           return :attachment if attachment_reflection
 
-          if association_reflection
-            return :association
-          end
+          return :association if association_reflection
 
           if object.class.respond_to?(:defined_enums)
             return :enum if object.class.defined_enums.key?(key.to_s)
