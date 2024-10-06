@@ -10,6 +10,7 @@ module Phlexi
   module Field
     Loader = Zeitwerk::Loader.new.tap do |loader|
       loader.tag = File.basename(__FILE__, ".rb")
+      loader.ignore("#{__dir__}/field/version.rb")
       loader.inflector.inflect(
         "phlexi-field" => "Phlexi",
         "phlexi" => "Phlexi",
