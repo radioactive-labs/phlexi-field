@@ -108,7 +108,7 @@ module Phlexi
         # a method call. For example, a `Hash` would be accessed via `user[:email]` instead of `user.send(:email)`
         def object_value_for(key:)
           return @object.send(key) if @object.respond_to?(key)
-          @object.fetch(key) if @object.is_a?(Hash)
+          @object[key] if @object.is_a?(Hash)
         end
 
         private

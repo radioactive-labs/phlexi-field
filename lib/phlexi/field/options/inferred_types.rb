@@ -55,7 +55,7 @@ module Phlexi
           # Check if object is a has that contains key
           if object.respond_to?(:fetch)
             # Fallback to inferring type from the value
-            return infer_field_type_from_value(object.fetch(key))
+            return infer_field_type_from_value(object[key])
           end
 
           # Default to string if we can't determine the type
