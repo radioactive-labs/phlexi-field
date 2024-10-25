@@ -46,17 +46,9 @@ module Phlexi
             return custom_type.type if custom_type&.type
           end
 
-          # Check if object responds to the key
-          if object.respond_to?(key)
-            # Fallback to inferring type from the value
-            return infer_field_type_from_value(object.send(key))
-          end
-
-          # Check if object is a has that contains key
-          if object.respond_to?(:fetch)
-            # Fallback to inferring type from the value
-            return infer_field_type_from_value(object[key])
-          end
+          # Fallback to inferring type from the value
+          value = Phlexi::Field::Support::Value.from(object, key)
+          return infer_field_type_from_value(value) unless value.nil?
 
           # Default to string if we can't determine the type
           :string

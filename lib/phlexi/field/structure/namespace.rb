@@ -100,15 +100,8 @@ module Phlexi
 
         protected
 
-        # Calls the corresponding method on the object for the `key` name, if it exists. For example
-        # if the `key` is `email` on `User`, this method would call `User#email` if the method is
-        # present.
-        #
-        # This method could be overwritten if the mapping between the `@object` and `key` name is not
-        # a method call. For example, a `Hash` would be accessed via `user[:email]` instead of `user.send(:email)`
         def object_value_for(key:)
-          return @object.send(key) if @object.respond_to?(key)
-          @object[key] if @object.is_a?(Hash)
+          Phlexi::Field::Support::Value.from(@object, key)
         end
 
         private

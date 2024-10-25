@@ -67,7 +67,7 @@ module Phlexi
       end
 
       def determine_value_from_object
-        object.respond_to?(key) ? object.public_send(key) : nil
+        Phlexi::Field::Support::Value.from(object, key)
       end
     end
   end
