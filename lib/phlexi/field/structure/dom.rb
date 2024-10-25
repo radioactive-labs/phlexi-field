@@ -22,7 +22,11 @@ module Phlexi
         def id
           @id ||= begin
             root, *rest = lineage
-            root_key = root.respond_to?(:dom_id) ? root.dom_id : root.key
+            root_key = if root.respond_to?(:dom_id)
+              root.dom_id
+            else
+              root.key
+            end
             rest.map(&:key).unshift(root_key).join("_")
           end
         end

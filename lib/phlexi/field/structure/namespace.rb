@@ -22,10 +22,11 @@ module Phlexi
 
         attr_reader :builder_klass, :object
 
-        def initialize(key, parent:, builder_klass:, object: nil)
+        def initialize(key, parent:, builder_klass:, object: nil, dom_id: nil)
           super(key, parent: parent)
           @builder_klass = builder_klass
           @object = object
+          @dom_id = dom_id
           @children = {}
           yield self if block_given?
         end
@@ -84,12 +85,12 @@ module Phlexi
 
         def dom_id
           @dom_id ||= begin
-            id = if object.nil?
+            object_id = if object.nil?
               nil
             elsif (primary_key = Phlexi::Field.object_primary_key(object))
               primary_key&.to_s || :new
             end
-            [key, id].compact.join("_").underscore
+            [key, object_id].compact.join("_").underscore
           end
         end
 
