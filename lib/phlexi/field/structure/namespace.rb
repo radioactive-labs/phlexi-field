@@ -51,8 +51,9 @@ module Phlexi
         #   end
         # end
         # ```
-        def nest_one(key, object: nil, &)
+        def nest_one(key, object: nil, as: nil, &)
           object ||= object_value_for(key: key)
+          key = as || key
           create_child(key, self.class, object:, builder_klass:, &)
         end
 
@@ -72,8 +73,9 @@ module Phlexi
         # ```
         # The object within the block is a `Namespace` object that maps each object within the enumerable
         # to another `Namespace` or `Field`.
-        def nest_many(key, collection: nil, &)
+        def nest_many(key, collection: nil, as: nil, &)
           collection ||= Array(object_value_for(key: key))
+          key = as || key
           create_child(key, self.class::NamespaceCollection, collection:, &)
         end
 
