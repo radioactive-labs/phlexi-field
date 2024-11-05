@@ -16,6 +16,10 @@ module Phlexi
           each(&block)
         end
 
+        def object
+          @collection
+        end
+
         private
 
         def each(&)
