@@ -30,8 +30,15 @@ module Phlexi
         #
         # @return [Array<Namespace>] An array of namespace objects.
         def namespaces
-          @namespaces ||= @collection.map.with_index do |object, key|
-            build_namespace(key, object: object)
+          @namespaces ||= case @collection
+          when Hash
+            @collection.map do |key, object|
+              build_namespace(key, object: object)
+            end
+          when Array
+            @collection.map.with_index do |object, key|
+              build_namespace(key, object: object)
+            end
           end
         end
 
