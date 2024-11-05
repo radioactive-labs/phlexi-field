@@ -31,8 +31,8 @@ module Phlexi
           yield self if block_given?
         end
 
-        def field(key, **attributes)
-          create_child(key, attributes.delete(:builder_klass) || builder_klass, object: object, **attributes).tap do |field|
+        def field(key, template: false, **attributes)
+          create_child(key, attributes.delete(:builder_klass) || builder_klass, object: object, template:, **attributes).tap do |field|
             yield field if block_given?
           end
         end
@@ -51,10 +51,10 @@ module Phlexi
         #   end
         # end
         # ```
-        def nest_one(key, object: nil, as: nil, &)
+        def nest_one(key, object: nil, as: nil, template: false, &)
           object ||= object_value_for(key: key)
           key = as || key
-          create_child(key, self.class, object:, builder_klass:, &)
+          create_child(key, self.class, object:, template:, builder_klass:, &)
         end
 
         # Wraps an array of objects in Namespace classes. For example, if `User#addresses` returns
@@ -73,10 +73,10 @@ module Phlexi
         # ```
         # The object within the block is a `Namespace` object that maps each object within the enumerable
         # to another `Namespace` or `Field`.
-        def nest_many(key, collection: nil, as: nil, &)
+        def nest_many(key, collection: nil, as: nil, template: false, &)
           collection ||= Array(object_value_for(key: key))
           key = as || key
-          create_child(key, self.class::NamespaceCollection, collection:, &)
+          create_child(key, self.class::NamespaceCollection, collection:, template:, &)
         end
 
         # Iterates through the children of the current namespace, which could be `Namespace` or `Field`
@@ -111,8 +111,12 @@ module Phlexi
 
         # Checks if the child exists. If it does then it returns that. If it doesn't, it will
         # build the child.
-        def create_child(key, child_class, **kwargs, &block)
-          @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **kwargs, &block) }
+        def create_child(key, child_class, template: false, **, &)
+          if template
+            child_class.new(key, parent: self, **, &)
+          else
+            @children.fetch(key) { @children[key] = child_class.new(key, parent: self, **, &) }
+          end
         end
       end
     end
