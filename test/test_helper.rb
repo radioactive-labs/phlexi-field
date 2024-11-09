@@ -1,4 +1,4 @@
-require "phlexi-form"
+require "phlexi-field"
 
 require "minitest/autorun"
 require "minitest/reporters"

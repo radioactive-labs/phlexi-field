@@ -2,7 +2,7 @@
 
 Phlexi::Form is a flexible and powerful form builder for Ruby applications. It provides a more customizable and extensible way to create forms compared to traditional form helpers.
 
-[![Ruby](https://github.com/radioactive-labs/phlexi-form/actions/workflows/main.yml/badge.svg)](https://github.com/radioactive-labs/phlexi-form/actions/workflows/main.yml)
+[![Ruby](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml/badge.svg)](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml)
 
 ## Features
 
@@ -20,7 +20,7 @@ Phlexi::Form is a flexible and powerful form builder for Ruby applications. It p
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'phlexi-form'
+gem 'phlexi-field'
 ```
 
 And then execute:
@@ -32,7 +32,7 @@ $ bundle install
 Or install it yourself as:
 
 ```
-$ gem install phlexi-form
+$ gem install phlexi-field
 ```
 
 ## Usage
@@ -189,7 +189,7 @@ end
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/radioactive-labs/phlexi-form.
+Bug reports and pull requests are welcome on GitHub at https://github.com/radioactive-labs/phlexi-field.
 
 ## License
 

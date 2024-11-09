@@ -2,5 +2,5 @@
 
 source "https://rubygems.org"
 
-# Specify your gem's dependencies in phlexi-form.gemspec
+# Specify your gem's dependencies in phlexi-field.gemspec
 gemspec
