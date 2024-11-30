@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    phlexi-field (0.0.9)
+    phlexi-field (0.0.10)
       activesupport
       fiber-local
       phlex (~> 1.11)

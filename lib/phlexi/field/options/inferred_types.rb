@@ -25,6 +25,11 @@ module Phlexi
         end
 
         def infer_field_type
+          if object.class.respond_to?(:rich_text_association_names) &&
+              object.class.rich_text_association_names.include?(:"rich_text_#{key}")
+            return :rich_text
+          end
+
           # Check attachments first since they are implemented as associations
           return :attachment if attachment_reflection
 
