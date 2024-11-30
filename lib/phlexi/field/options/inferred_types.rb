@@ -103,6 +103,7 @@ module Phlexi
             /^email/ => :email,
             /^search/ => :search,
             /phone|tel(ephone)?/ => :phone,
+            /^datetime/ => :datetime,
             /^time/ => :time,
             /^date/ => :date,
             /^number|_count$|_amount$/ => :number,
