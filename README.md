@@ -139,7 +139,7 @@ You can create custom form components by inheriting from `Phlexi::Form::Componen
 
 ```ruby
 class CustomInput < Phlexi::Form::Components::Base
-  def template
+  def view_template
     div(class: "custom-input") do
       input(**attributes)
       span(class: "custom-icon")

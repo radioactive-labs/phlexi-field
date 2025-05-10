@@ -23,7 +23,9 @@ module Phlexi
         def build_component_class
           return if attributes[:class] == false
 
-          attributes[:class] = tokens(component_name, attributes[:class])
+          base_class = component_name
+          existing_class = attributes[:class]
+          attributes[:class] = existing_class ? "#{base_class} #{existing_class}" : base_class
         end
 
         def component_name
