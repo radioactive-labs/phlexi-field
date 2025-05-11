@@ -3,6 +3,7 @@
 require "bundler/gem_tasks"
 require "rake/testtask"
 require "standard/rake"
+require "appraisal"
 
 task default: %i[test standard]
 
@@ -11,4 +12,32 @@ Rake::TestTask.new do |t|
   t.libs << "test"
   t.test_files = FileList["test/**/*_test.rb"]
   t.verbose = true
+end
+
+Rake::TestTask.new(:test) do |t|
+  t.libs << "test"
+  t.libs << "lib"
+  t.test_files = FileList["test/**/*_test.rb"]
+end
+
+namespace :test do
+  desc "Run core tests that don't depend on Rails"
+  Rake::TestTask.new(:core) do |t|
+    t.libs << "test"
+    t.libs << "lib"
+    t.test_files = FileList["test/phlexi/field/**/*_test.rb"].exclude("test/phlexi/rails/**/*_test.rb")
+  end
+
+  desc "Run Rails integration tests"
+  Rake::TestTask.new(:rails) do |t|
+    t.libs << "test"
+    t.libs << "lib"
+    t.test_files = FileList["test/phlexi/rails/**/*_test.rb"]
+  end
+end
+
+desc "Run tests across all appraisals"
+task :test_all do
+  sh "bundle exec appraisal install"
+  sh "bundle exec appraisal test"
 end

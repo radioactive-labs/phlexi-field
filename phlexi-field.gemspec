@@ -34,7 +34,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "phlex", "~> 2.0"
-  spec.add_dependency "activesupport"
+  spec.add_dependency "activesupport", ">= 7.1"
   spec.add_dependency "zeitwerk"
   spec.add_dependency "fiber-local"
 
@@ -46,5 +46,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "bundle-audit"
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "combustion"
-  spec.add_development_dependency "phlex-testing-capybara"
+  spec.add_development_dependency "nokogiri"
 end

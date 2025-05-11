@@ -23,6 +23,8 @@ module Phlexi
         private
 
         def each(&)
+          # Only iterate if we have namespaces
+          return [] unless @collection
           namespaces.each(&)
         end
 
@@ -39,6 +41,8 @@ module Phlexi
             @collection.map.with_index do |object, key|
               build_namespace(key, object: object)
             end
+          else
+            [] # Return empty array for nil or invalid collections
           end
         end
 
