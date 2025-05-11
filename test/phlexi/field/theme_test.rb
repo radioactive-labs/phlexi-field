@@ -14,15 +14,15 @@ module Phlexi
             button: "btn btn-primary",
             input: "form-control",
             error: "text-red-500",
-            
+
             # Inherited themes
             email: :input,
             password: :input,
-            
+
             # Nested inheritance
             primary_button: :button,
             danger_button: :primary_button,
-            
+
             # Empty theme
             empty: nil
           }
@@ -75,7 +75,7 @@ module Phlexi
           circular1: :circular2,
           circular2: :circular1
         }.freeze)
-        
+
         assert_nil circular_theme.resolve_theme(:circular1)
       end
 
@@ -86,4 +86,4 @@ module Phlexi
       end
     end
   end
-end 
+end

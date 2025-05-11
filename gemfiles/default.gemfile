@@ -5,4 +5,8 @@ source "https://rubygems.org"
 gem "rails", "~> 7.1"
 gem "sqlite3", "~> 1.4"
 
+platforms :ruby, :x86_64_linux, :arm64_darwin do
+
+end
+
 gemspec path: "../"

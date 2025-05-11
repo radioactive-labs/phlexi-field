@@ -1,0 +1,24 @@
+#!/bin/bash
+set -e
+
+# Update Ruby version file if specified
+if [ -n "$RUBY_VERSION" ] && [ "$RUBY_VERSION" != "$(cat .ruby-version 2>/dev/null || echo '')" ]; then
+  echo "Setting Ruby version to: $RUBY_VERSION"
+  echo "$RUBY_VERSION" > .ruby-version
+fi
+
+# Add CI compatible platform
+bundle lock --add-platform x86_64-linux
+
+# Install main bundle
+bundle install --jobs 4
+
+# Install gems for all appraisals
+bundle exec appraisal install
+
+# # Add platform to all gemfiles
+# for gemfile in gemfiles/*.gemfile; do
+#   BUNDLE_GEMFILE="$gemfile" bundle lock --add-platform x86_64-linux
+# done
+
+echo "CI setup complete!" 

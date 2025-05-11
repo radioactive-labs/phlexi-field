@@ -6,4 +6,8 @@ gem "rails", "~> 8.0.0"
 gem "sqlite3", "~> 2.1"
 gem "phlex-rails", "~> 2.2"
 
+platforms :ruby, :x86_64_linux, :arm64_darwin do
+
+end
+
 gemspec path: "../"

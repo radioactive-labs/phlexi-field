@@ -29,4 +29,4 @@ module RailsComponentTestHelper
     post url, params: params
     Nokogiri::HTML5(response.body)
   end
-end 
+end

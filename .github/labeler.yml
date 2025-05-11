@@ -1,0 +1,19 @@
+documentation:
+  - "**/*.md"
+  - "doc/**/*"
+
+tests:
+  - "test/**/*"
+
+dependencies:
+  - "Gemfile"
+  - "Gemfile.lock"
+  - "*.gemspec"
+  - "Appraisals"
+  - "gemfiles/**/*"
+
+ci:
+  - ".github/workflows/**/*"
+  
+lib:
+  - "lib/**/*" 

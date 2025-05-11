@@ -12,13 +12,11 @@ require "ostruct"
 module ComponentTestHelper
   # Basic render method that returns the HTML output of a component
   def render(component)
-    begin
-      component.call.to_s
-    rescue => e
-      warn "Error rendering component: #{component.class.name}, Error: #{e.message}"
-      warn e.backtrace.first(5).join("\n")
-      ""
-    end
+    component.call.to_s
+  rescue => e
+    warn "Error rendering component: #{component.class.name}, Error: #{e.message}"
+    warn e.backtrace.first(5).join("\n")
+    ""
   end
 
   # Parse HTML as a fragment

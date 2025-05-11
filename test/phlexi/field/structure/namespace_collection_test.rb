@@ -48,7 +48,7 @@ module Phlexi
           collection = NamespaceCollection.new(:items, parent: @parent, collection: @array_collection) do |item|
             # Block is required
           end
-          
+
           assert_equal :items, collection.key
           assert_equal @parent, collection.parent
           assert_equal @array_collection, collection.object
@@ -58,7 +58,7 @@ module Phlexi
           collection = NamespaceCollection.new(:items, parent: @parent, collection: @hash_collection) do |item|
             # Block is required
           end
-          
+
           assert_equal :items, collection.key
           assert_equal @parent, collection.parent
           assert_equal @hash_collection, collection.object
@@ -69,7 +69,7 @@ module Phlexi
           NamespaceCollection.new(:items, parent: @parent, collection: @array_collection) do |namespace|
             namespaces << namespace
           end
-          
+
           assert_equal 3, namespaces.length
           assert_instance_of MockParentNamespace, namespaces[0]
           assert_equal :"0", namespaces[0].key
@@ -81,7 +81,7 @@ module Phlexi
           NamespaceCollection.new(:items, parent: @parent, collection: @hash_collection) do |namespace|
             namespaces << namespace
           end
-          
+
           assert_equal 2, namespaces.length
           assert_instance_of MockParentNamespace, namespaces[0]
           assert_includes [:first, :second], namespaces[0].key
@@ -93,31 +93,30 @@ module Phlexi
           NamespaceCollection.new(:items, parent: @parent, collection: @array_collection) do |namespace|
             call_count += 1
           end
-          
+
           assert_equal 3, call_count
         end
 
         def test_created_namespaces_have_parent_set_to_collection
-          collection = nil
           namespace = nil
-          
+
           collection = NamespaceCollection.new(:items, parent: @parent, collection: @array_collection) do |ns|
             namespace = ns if namespace.nil?
           end
-          
+
           assert_equal collection, namespace.parent
         end
 
         def test_created_namespaces_have_builder_klass_from_parent
           namespace = nil
-          
+
           NamespaceCollection.new(:items, parent: @parent, collection: @array_collection) do |ns|
             namespace = ns if namespace.nil?
           end
-          
+
           assert_equal @parent.builder_klass, namespace.builder_klass
         end
       end
     end
   end
-end 
+end

@@ -3,25 +3,56 @@ name: Ruby
 on:
   push:
     branches:
-      - main
-
+      - master
   pull_request:
+  workflow_dispatch:
 
 jobs:
-  build:
+  lint:
     runs-on: ubuntu-latest
-    name: Ruby ${{ matrix.ruby }}
-    strategy:
-      matrix:
-        ruby:
-          - "3.2.2"
-
+    name: Lint
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: '3.2.2'
+          bundler-cache: false
+      - name: CI Setup
+        run: |
+          RUBY_VERSION=3.2.2 bin/ci-setup
+      - name: Run Standard
+        run: bundle exec standardrb
+      - name: Run Bundle Audit
+        run: bundle exec bundle-audit check --update
+
+  test:
+    runs-on: ubuntu-latest
+    name: Ruby ${{ matrix.ruby }} / ${{ matrix.gemfile }}
+    needs: lint
+    strategy:
+      fail-fast: true
+      matrix:
+        ruby:
+          - '3.2.2'
+          - '3.3.0'
+        gemfile:
+          - default
+          - rails_7.1
+          - rails_8
+    env:
+      BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby ${{ matrix.ruby }}
+        uses: ruby/setup-ruby@v1
+        with:
           ruby-version: ${{ matrix.ruby }}
-          bundler-cache: true
-      - name: Appraise
-        run: bin/appraise
+          bundler-cache: false
+      - name: CI Setup
+        run: |
+          RUBY_VERSION=${{ matrix.ruby }} bin/ci-setup
+      - name: Run tests
+          gemfile=${{ matrix.gemfile }}
+          appraisal="${gemfile//_/}" # Replace all underscores with hyphens
+        run: bundle exec appraisal $appraisal rake test

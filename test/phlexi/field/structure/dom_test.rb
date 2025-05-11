@@ -21,14 +21,14 @@ module Phlexi
         def test_value
           field = MockField.new(key: :test, value: 123)
           dom = DOM.new(field: field)
-          
+
           assert_equal "123", dom.value
         end
 
         def test_id_with_single_level
           field = MockField.new(key: :test)
           dom = DOM.new(field: field)
-          
+
           assert_equal "test", dom.id
         end
 
@@ -37,7 +37,7 @@ module Phlexi
           child = MockField.new(key: :child, parent: parent)
           grandchild = MockField.new(key: :grandchild, parent: child)
           dom = DOM.new(field: grandchild)
-          
+
           assert_equal "parent_child_grandchild", dom.id
         end
 
@@ -47,14 +47,14 @@ module Phlexi
             "custom_#{key}"
           end
           dom = DOM.new(field: field)
-          
+
           assert_equal "custom_test", dom.id
         end
 
         def test_name_with_single_level
           field = MockField.new(key: :test)
           dom = DOM.new(field: field)
-          
+
           assert_equal "test", dom.name
         end
 
@@ -63,7 +63,7 @@ module Phlexi
           child = MockField.new(key: :child, parent: parent)
           grandchild = MockField.new(key: :grandchild, parent: child)
           dom = DOM.new(field: grandchild)
-          
+
           assert_equal "parent[child][grandchild]", dom.name
         end
 
@@ -72,7 +72,7 @@ module Phlexi
           child = MockField.new(key: :child, parent: parent)
           grandchild = MockField.new(key: :grandchild, parent: child)
           dom = DOM.new(field: grandchild)
-          
+
           lineage = dom.lineage.to_a
           assert_equal 3, lineage.size
           assert_equal :parent, lineage[0].key
@@ -83,11 +83,11 @@ module Phlexi
         def test_inspect
           field = MockField.new(key: :test, value: "value")
           dom = DOM.new(field: field)
-          
+
           expected = %(<#{DOM.name} id="test" name="test" value="value"/>)
           assert_equal expected, dom.inspect
         end
       end
     end
   end
-end 
+end
