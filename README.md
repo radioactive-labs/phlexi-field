@@ -4,7 +4,8 @@
 [![CI](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml/badge.svg)](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-Phlexi::Field is a Ruby gem that provides base field components for the Phlexi ecosystem. It's designed to work with [Phlex](https://github.com/phlex-ruby/phlex), a framework for building view components in Ruby.
+Phlexi::Field is a field component framework for Ruby applications that provides a unified field abstraction across forms, displays, and tables. Built on a namespace-based architecture for handling complex object relationships.
+It's designed to work with [Phlex](https://github.com/phlex-ruby/phlex), a framework for building view components in Ruby.
 
 ## Design Philosophy & Purpose
 

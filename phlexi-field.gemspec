@@ -8,8 +8,8 @@ Gem::Specification.new do |spec|
   spec.authors = ["Stefan Froelich"]
   spec.email = ["sfroelich01@gmail.com"]
 
-  spec.summary = "Base fields for the Phlexi libraries"
-  spec.description = "Base fields for the Phlexi libraries"
+  spec.summary = "A field component framework for Ruby applications that provides a unified field abstraction across forms, displays, and tables."
+  spec.description = "A field component framework for Ruby applications that provides a unified field abstraction across forms, displays, and tables. Built on Phlex with a namespace-based architecture for handling complex object relationships."
   spec.homepage = "https://github.com/radioactive-labs/phlexi-field"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 3.2.2"
