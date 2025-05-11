@@ -1,195 +1,173 @@
-# Phlexi::Form 
+# Phlexi::Field
 
-Phlexi::Form is a flexible and powerful form builder for Ruby applications. It provides a more customizable and extensible way to create forms compared to traditional form helpers.
+[![Gem Version](https://badge.fury.io/rb/phlexi-field.svg)](https://badge.fury.io/rb/phlexi-field)
+[![CI](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml/badge.svg)](https://github.com/radioactive-labs/phlexi-field/actions/workflows/main.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-[![Ruby](https://github.com/radioactive-labs/phlexi-form/actions/workflows/main.yml/badge.svg)](https://github.com/radioactive-labs/phlexi-form/actions/workflows/main.yml)
-
-## Features
-
-- Customizable form components (input, select, checkbox, radio button, etc.)
-- Automatic field type and attribute inference based on model attributes
-- Built-in support for validations and error handling
-- Flexible form structure with support for nested attributes
-- Works with Phlex or erb views
-- Extract input from parameters that match your form definition. No need to strong paramters.
-- Rails compatible form inputs
-
+Phlexi::Field is a Ruby gem that provides base field components for the Phlexi ecosystem. It's designed to work with [Phlex](https://github.com/phlex-ruby/phlex), a framework for building view components in Ruby.
 
 ## Installation
 
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'phlexi-form'
+gem 'phlexi-field'
 ```
 
 And then execute:
 
-```
+```bash
 $ bundle install
 ```
 
 Or install it yourself as:
 
+```bash
+$ gem install phlexi-field
 ```
-$ gem install phlexi-form
-```
+
+## Requirements
+
+- Ruby >= 3.2.2
+- Phlex ~> 2.0
+- ActiveSupport >= 7.1
 
 ## Usage
 
-There are 2 ways to use Phlexi::Form:
+Phlexi::Field provides a foundation for building components that handle object fields such as forms and other UI components. It handles DOM structure, field values, configuration of labels, descriptions, hints, and more.
 
-### Direct Usage
+It serves as a foundation for [Phlexi::Form](https://github.com/radioactive-labs/phlexi-form), [Phlexi::Display](https://github.com/radioactive-labs/phlexi-display) and [Phlexi::Table](https://github.com/radioactive-labs/phlexi-table).
 
-```ruby
-Phlexi::Form(User.new) do
-  field(:name) do |name|
-    render name.label_tag
-    render name.input_tag
-  end
-
-  field(:email) do |email|
-    render email.label_tag
-    render email.input_tag
-  end
-
-  nest_one(:address) do |address|
-    address.field(:street) do |street|
-      render street.label_tag
-      render street.input_tag
-    end
-
-    address.field(:city) do |city|
-      render city.label_tag
-      render city.input_tag
-    end
-  end
-
-  render submit_button
-end
-```
-
-> **Important**
->
-> If you are rendering your form inline e.g. 
-> ```ruby
-> render Phlexi::Form(User.new) {
->   render field(:name).label_tag
->   render field(:name).input_tag
-> }
-> ```
->
-> Make sure you use `{...}` in defining your block instead of `do...end`
-> This might be fixed in a future version.
-
-### Inherit form
+### Basic Example
 
 ```ruby
-class UserForm < Phlexi::Form::Base
-  def form_template
-    field(:name) do |name|
-      render name.label_tag
-      render name.input_tag
-    end
-
-    field(:email) do |email|
-      render email.label_tag
-      render email.input_tag
-    end
-
-    nest_one(:address) do |address|
-      address.field(:street) do |street|
-        render street.label_tag
-        render street.input_tag
-      end
-
-      address.field(:city) do |city|
-        render city.label_tag
-        render city.input_tag
-      end
-    end
-
-    render submit_button
+class UserForm < Phlex::HTML
+  def initialize(user)
+    super()
+    @user = user
   end
-end
-
-
-# In your view or controller
-form = UserForm.new(User.new)
-
-# Render the form
-render form
-
-# Extract params
-form.extract_input({
-  name: "Brad Pitt",
-  email: "brad@pitt.com",
-  address: {
-    street: "Plumbago",
-    city: "Accra",
-  }
-})
-```
-
-## Advanced Usage
-
-### Custom Components
-
-You can create custom form components by inheriting from `Phlexi::Form::Components::Base`:
-
-```ruby
-class CustomInput < Phlexi::Form::Components::Base
+  
   def view_template
-    div(class: "custom-input") do
-      input(**attributes)
-      span(class: "custom-icon")
-    end
-  end
-end
-
-# Usage in your form
-field(:custom_field) do |field|
-  render CustomInput.new(field)
-end
-```
-
-### Theming
-
-Phlexi::Form supports theming through a flexible theming system:
-
-```ruby
-class ThemedForm < Phlexi::Form::Base
-  class FieldBuilder < FieldBuilder
-    private
+    namespace = Phlexi::Field::Structure::Namespace.new(
+      :user, 
+      parent: nil, 
+      builder_klass: Phlexi::Field::Builder, 
+      object: @user
+    )
     
-    def default_theme
-      {
-        input: "border rounded px-2 py-1",
-        label: "font-bold text-gray-700",
-        # Add more theme options here
-      }
+    form(action: "/users", method: "post") do
+      # Create a name field
+      name_field = namespace.field(:name)
+      label(for: name_field.dom.id) { name_field.label }
+      input(
+        id: name_field.dom.id, 
+        name: name_field.dom.name, 
+        value: name_field.value, 
+        type: "text"
+      )
+      
+      # Create an email field
+      email_field = namespace.field(:email)
+      label(for: email_field.dom.id) { email_field.label }
+      input(
+        id: email_field.dom.id, 
+        name: email_field.dom.name, 
+        value: email_field.value, 
+        type: "email"
+      )
+      
+      # Submit button
+      button(type: "submit") { "Submit" }
     end
   end
 end
+
+# Usage in a controller
+def new
+  user = User.new
+  render UserForm.new(user)
+end
 ```
 
-<!-- ## Configuration
+### Nested Forms
 
-You can configure Phlexi::Form globally by creating an initializer:
+Phlexi::Field supports nested forms for complex data structures:
 
 ```ruby
-# config/initializers/phlexi_form.rb
-Phlexi::Form.configure do |config|
-  config.default_theme = {
-    # Your default theme options
-  }
-  # Add more configuration options here
+# For a has_one relationship
+namespace.nest_one(:profile) do |profile|
+  profile.field(:first_name) # => Creates a field for user[profile][first_name]
 end
-``` -->
+
+# For a has_many relationship
+namespace.nest_many(:addresses) do |address_builder|
+  address_field = address_builder.field(:id)
+  # Creates fields like user[addresses][][id]
+end
+```
+
+### Field Options
+
+Fields support various options for customization:
+
+```ruby
+# Custom label
+field = namespace.field(:email, label: "Email Address")
+
+# Required fields
+field = namespace.field(:email, required: true)
+
+# Placeholder text
+field = namespace.field(:email, placeholder: "Enter your email")
+
+# Description/hint text
+field = namespace.field(:password, hint: "Must be at least 8 characters")
+```
+
+## Components
+
+Phlexi::Field comes with a base component architecture that you can extend:
+
+```ruby
+class MyInputComponent < Phlexi::Field::Components::Base
+  def view_template
+    input(
+      id: field.dom.id,
+      name: field.dom.name,
+      value: field.value,
+      type: "text",
+      **attributes
+    )
+  end
+end
+
+# Usage
+my_component = MyInputComponent.new(field, class: "custom-input")
+render my_component
+```
+
+## Integration with Rails
+
+While Phlexi::Field works standalone with Phlex, it has first-class support for Rails:
+
+```ruby
+# In your Gemfile
+gem 'phlexi-field'
+gem 'phlex-rails'
+```
+
+The library automatically uses Rails conventions when available:
+- Humanized attribute names via `human_attribute_name`
+- Association detection via `reflect_on_association`
+- Primary key handling
+
+## Development
+
+After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/radioactive-labs/phlexi-form.
+Bug reports and pull requests are welcome on GitHub at https://github.com/radioactive-labs/phlexi-field.
 
 ## License
 
