@@ -6,6 +6,17 @@
 
 Phlexi::Field is a Ruby gem that provides base field components for the Phlexi ecosystem. It's designed to work with [Phlex](https://github.com/phlex-ruby/phlex), a framework for building view components in Ruby.
 
+## Design Philosophy & Purpose
+
+Phlexi::Field serves as the foundation for field rendering across multiple contexts in web applications. Unlike traditional form builders that focus solely on forms, Phlexi::Field creates a unified abstraction for working with fields that can be used for:
+
+- Form inputs
+- Read-only displays
+- Table columns
+- Any other UI context where object fields are presented
+
+It is designed around a **namespace-based architecture** that creates a hierarchical tree structure for complex object graphs, handling nested relationships and collections gracefully.
+
 ## Installation
 
 Add this line to your application's Gemfile:
@@ -31,6 +42,146 @@ $ gem install phlexi-field
 - Ruby >= 3.2.2
 - Phlex ~> 2.0
 - ActiveSupport >= 7.1
+
+## Core Architecture
+
+### Namespace Pattern
+
+The foundation of Phlexi::Field is the `Namespace` concept:
+
+1. A Namespace maps an object (like an ActiveRecord model) to a key
+2. Fields are created within a namespace
+3. Namespaces can be nested to represent complex object relationships
+
+```ruby
+# Create a root namespace for a user object
+namespace = Phlexi::Field::Structure::Namespace.new(
+  :user,                           # The key/name 
+  parent: nil,                     # Root namespace has no parent
+  builder_klass: Phlexi::Field::Builder,  # Field builder class
+  object: @user                    # The data object
+)
+
+# Create a field within the namespace
+email_field = namespace.field(:email)
+
+# Access field properties
+email_field.dom.id      # => "user_email"
+email_field.dom.name    # => "user[email]"
+email_field.value       # => The email value from @user
+```
+
+### Nested Objects and Collections
+
+One of Phlexi::Field's strengths is handling complex object graphs:
+
+```ruby
+# For a has_one relationship
+namespace.nest_one(:profile) do |profile|
+  first_name = profile.field(:first_name)
+  # DOM properties: id="user_profile_first_name", name="user[profile][first_name]"
+end
+
+# For a has_many relationship
+namespace.nest_many(:addresses) do |address_builder|
+  street = address_builder.field(:street)
+  # DOM properties: id="user_addresses_street", name="user[addresses][][street]"
+end
+```
+
+### Field Builders and Components
+
+Phlexi::Field separates field creation from rendering:
+
+- `Builder` classes handle field creation, value access, and configuration
+- `Component` classes handle presentation and rendering
+
+This separation allows the same field structure to be rendered differently in various contexts.
+
+## Field Configuration Options
+
+Phlexi::Field provides a rich set of options for configuring how fields are displayed and behave:
+
+### Labels
+
+Labels can be explicitly set or automatically generated from the object's attribute name:
+
+```ruby
+# Custom label
+field = namespace.field(:email, label: "Email Address")
+
+# Get the current label (automatically falls back to humanized attribute name)
+field.label  # => "Email Address" or "Email" if not explicitly set
+
+# Rails integration: Uses human_attribute_name if available
+# user.class.human_attribute_name(:email) => "Email Address"
+```
+
+### Hints and Descriptions
+
+Hints provide contextual help for users, while descriptions offer more detailed explanations:
+
+```ruby
+# Setting a hint for a field
+field = namespace.field(:password, hint: "Must be at least 8 characters")
+field.hint  # => "Must be at least 8 characters"
+field.has_hint?  # => true
+
+# Setting a description
+field = namespace.field(:terms_accepted, 
+                      description: "By accepting our terms, you agree to our privacy policy.")
+field.description  # => "By accepting our terms, you agree to our privacy policy."
+field.has_description?  # => true
+```
+
+### Placeholders
+
+Text placeholders can be set for input fields:
+
+```ruby
+field = namespace.field(:email, placeholder: "john@example.com")
+field.placeholder  # => "john@example.com"
+```
+
+### Type Inference
+
+Phlexi::Field automatically infers the appropriate field type based on multiple signals:
+
+```ruby
+# Based on attribute/column type in ActiveRecord/ActiveModel
+# email_field.inferred_field_type  # => :string, :integer, :boolean, etc.
+
+# For string fields, it can also infer more specific types
+# email_field.inferred_string_field_type  # => :email, :password, :url, etc. 
+```
+
+The type inference algorithm considers:
+1. ActiveRecord column types
+2. ActiveModel attribute types  
+3. Value type inspection
+4. Field name conventions (email, password, url, etc.)
+5. Validation rules (email format, numericality, etc.)
+
+### Validators
+
+When using ActiveModel validations, Phlexi::Field can access them:
+
+```ruby
+# Check if a field is required based on presence validators
+field.required?  # => true/false based on presence validators
+
+# Access the validation errors
+field.errors  # => ["can't be blank", etc.]
+```
+
+### Multiple Options
+
+For fields that support multiple selections:
+
+```ruby
+field = namespace.field(:categories, multiple: true)
+field.multiple?  # => true
+```
 
 ## Usage
 
@@ -145,6 +296,15 @@ end
 my_component = MyInputComponent.new(field, class: "custom-input")
 render my_component
 ```
+
+## Comparison with Other Libraries
+
+Phlexi::Field differs from traditional Rails form helpers and gems like Simple Form in several key ways:
+
+1. **Unified Field API**: Creates a consistent interface for fields across forms, displays, and tables
+2. **Component-Based**: Built on Phlex's component system rather than Rails' helper-based approach
+3. **Separation of Concerns**: Cleanly separates field structure (namespace), data handling (builder), and presentation (components)
+4. **True Object Orientation**: Works with complete objects and their relationships rather than flat attribute lists
 
 ## Integration with Rails
 
