@@ -4,6 +4,8 @@ module Phlexi
   module Field
     module Components
       class Base < COMPONENT_BASE
+        include Phlexi::Field::Common::Tokens
+
         attr_reader :field, :attributes
 
         def initialize(field, **attributes)
@@ -23,9 +25,7 @@ module Phlexi
         def build_component_class
           return if attributes[:class] == false
 
-          base_class = component_name
-          existing_class = attributes[:class]
-          attributes[:class] = existing_class ? "#{base_class} #{existing_class}" : base_class
+          attributes[:class] = tokens(component_name, attributes[:class])
         end
 
         def component_name
